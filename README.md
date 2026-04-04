@@ -2,24 +2,6 @@
 
 A collection of automation workflows built using n8n.
 
-## 📦 Projects Included
-
-### 🤖 Telegram Bot
-
-* Automated Telegram chatbot
-* Workflow-based responses
-  👉 See: `/telegram-bot`
-
-### 💬 WhatsApp Bot
-
-* Automated replies and messaging
-  👉 See: `/whatsapp-bot`
-
-### 🧠 AI Agent
-
-* AI-powered automation workflow
-  👉 See: `/ai-agent`
-
 ## 🚀 How to Use
 
 1. Install n8n
