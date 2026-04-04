@@ -1,0 +1,207 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "148zYf6rt-AxijppoU-xBmjJPsEhxA5eC",
+          "mode": "list",
+          "cachedResultName": "demo",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/148zYf6rt-AxijppoU-xBmjJPsEhxA5eC"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -112
+      ],
+      "id": "e5e2b78b-0727-4f2a-b421-0528ee284a5b",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "CxHa0aQCwtLVP5M0",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "sijobam438@flownue.com",
+        "subject": "notice !!",
+        "emailType": "text",
+        "message": "=File {{ $json.name }}  has been uploaded ",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        -112
+      ],
+      "id": "4c442436-d79d-460f-b78d-0f0eacb2bfbc",
+      "name": "Send a message",
+      "webhookId": "2ad9a50c-5231-4507-a9b5-37ad1f65739a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xTpVZ46Z5Ri6xGra",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appZiEZOqUSIXH9Qa",
+          "mode": "list",
+          "cachedResultName": "Data Client",
+          "cachedResultUrl": "https://airtable.com/appZiEZOqUSIXH9Qa"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblZj2TymCJe7Wl5Y",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appZiEZOqUSIXH9Qa/tblZj2TymCJe7Wl5Y"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Google Drive Trigger').item.json.name }}",
+            "ID": "={{ $('Google Drive Trigger').item.json.id }}",
+            "Creation Date": "={{ $('Google Drive Trigger').item.json.createdTime }}",
+            "Recipient": "=sijobam438@flownue.com"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creation Date",
+              "displayName": "Creation Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Recipient",
+              "displayName": "Recipient",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        -112
+      ],
+      "id": "5bd2cc0c-cf19-4f21-8bb3-454885038981",
+      "name": "Create or update a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "512jx431CLZWxfQg",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Create or update a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "464b86f3-d41d-4ca5-a69f-192e2231edd0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c46c33e137f64d3ddd02378147bd8147229894a3956c77aa1fa36ce77a1f32a3"
+  },
+  "id": "XId7tytM5REQ8RmF",
+  "tags": []
+}
