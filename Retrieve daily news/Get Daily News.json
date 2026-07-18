@@ -1,0 +1,353 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        32
+      ],
+      "id": "9efd47da-3abf-4813-95ea-37b506f95a83",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://gnews.io/api/v4/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "AI"
+            },
+            {
+              "name": "lang",
+              "value": "en"
+            },
+            {
+              "name": "apikey",
+              "value": "694c70b5114c9f9930dc1ffaf8063d66"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "5ef36fce-4956-47e3-88ae-06d1eb713e55",
+      "name": "Get Gnews Articles"
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "b4a811ac2d844b6a9d30ae6c7f87408a"
+            },
+            {
+              "name": "q",
+              "value": "AI"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        144
+      ],
+      "id": "e62a9762-2d0d-4536-8b9f-508adf4f022e",
+      "name": "Get newsApi Articles"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b7a06dfa-2a4a-413f-8029-66e3f00cdfac",
+              "name": "articles",
+              "value": "={{ $json.articles }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        -80
+      ],
+      "id": "7d5f759b-0953-4cf5-b15b-f1205735edaf",
+      "name": "Article"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f475c740-9c08-4c73-a1f7-ad468710c8d3",
+              "name": "articles",
+              "value": "={{ $json.articles }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        144
+      ],
+      "id": "71cb1685-2516-455e-94b0-2509d50d5b99",
+      "name": "Article1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        464,
+        48
+      ],
+      "id": "aa1e2c3f-481d-4a5e-8332-cb781bf28a7f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "##                                                         Get the most recent Articles\n",
+        "height": 560,
+        "width": 1040,
+        "color": "#C45417"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "8a7a278e-4985-40d6-8b38-de5938146920",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Create Summarizion & send via Telegram",
+        "height": 560,
+        "width": 864,
+        "color": "#479E99"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "486cc157-5ea6-4f92-b5e4-0202305ad48d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        160
+      ],
+      "id": "abfe62cb-b64e-46c8-9698-d6ce532149fa",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "shOsFP1s5snpBThJ",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=** Select top Articles ** \n\nfrom {{$json.articles}}, choose the 15 most relevant articles related to AI technology advancements, tools ,research , and application.\n\n** Summarize Clearly **\nWrite in clear , professional , and readable language,\nsummurazing the main point of each article in 1-2 short sentences.\n\n** Include Links **\nafter each summary , add the article's URL for readers to explore more.\n\n* Add the Date **\nBegin the Summary with today's date \n{{ $now.format('yyyy/MM/dd')}}",
+        "options": {
+          "systemMessage": "Only return the summary in plain text – no explanations or additional formatting. \nKeep the response up to 2000 characters"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        912,
+        -48
+      ],
+      "id": "82e8b428-da9e-46b2-ad5b-935ae59dd3aa",
+      "name": "AI News Summarizer"
+    },
+    {
+      "parameters": {
+        "chatId": "587375680",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        -48
+      ],
+      "id": "c4c82e8d-7dcf-49bb-8c74-65b8f38608d1",
+      "name": "Send a text message",
+      "webhookId": "5b66f008-2502-4c5c-b477-fad1b73ce8f5",
+      "credentials": {
+        "telegramApi": {
+          "id": "X8j9bTtkZmcoFGit",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Gnews Articles",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get newsApi Articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Gnews Articles": {
+      "main": [
+        [
+          {
+            "node": "Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get newsApi Articles": {
+      "main": [
+        [
+          {
+            "node": "Article1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Article1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Article": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI News Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI News Summarizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI News Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a51d12f5-0f06-41ad-818b-8c9afd63ce7b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9a74a5a56ad4dae448b04081af3197b7ba61567b46750654ab68e0c942f90e83"
+  },
+  "nodeGroups": [],
+  "id": "kij53fMk6KNVtYZp",
+  "tags": []
+}
