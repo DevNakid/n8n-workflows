@@ -1,0 +1,567 @@
+{
+  "name": "Generate Post Linkedin",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Linkedin post generator",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "Write Your Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Post Topic",
+              "placeholder": "Create About What ?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Target Audience",
+              "fieldType": "textarea",
+              "placeholder": "Choose Your audience",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -64,
+        48
+      ],
+      "id": "8846f4e2-58d3-47fd-aa9b-9913f1a7f066",
+      "name": "On form submission",
+      "webhookId": "fb26f020-4e33-48ce-a67e-88925cfbc657"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        224
+      ],
+      "id": "bbb737b5-ed6e-414f-b8e5-330ba2259238",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool for searching in the web.",
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"who is Leo Messi?\",\n  \"search_depth\": \"basic\",\n  \"chunks_per_source\": 3,\n  \"max_results\": 1,\n  \"topic\": \"general\",\n  \"time_range\": null,\n  \"start_date\": \"2025-02-09\",\n  \"end_date\": \"2025-12-29\",\n  \"include_answer\": false,\n  \"include_raw_content\": false,\n  \"include_images\": false,\n  \"include_image_descriptions\": false,\n  \"include_favicon\": false,\n  \"include_domains\": [],\n  \"exclude_domains\": [],\n  \"include_domains_mode\": null,\n  \"country\": null,\n  \"language\": \"en\",\n  \"filter_by_language\": false,\n  \"auto_parameters\": false,\n  \"exact_match\": false,\n  \"include_usage\": false,\n  \"safe_search\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        416,
+        224
+      ],
+      "id": "3f9f3220-ab85-4ced-b19d-fa30373f8cc0",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "## Content Ideas",
+        "height": 480,
+        "width": 256,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "5b78a1c9-8dcb-4d8d-a24c-936d20db756e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Create Content\n* => Generate Linkedin post. \n* =>Prompt for an image to generate with OpenAI.\n*  =>Title for Linkedin Post .\n\n",
+        "height": 480,
+        "width": 1056,
+        "color": "#113140"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        176,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "a1343c77-e186-4edd-9485-99977002bec5",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Post Topic: {{ $json['Post Topic'] }}\nTarget Audience: {{ $json['Target Audience'] }} ",
+        "options": {
+          "systemMessage": "=** Purpose **\nCreate LinkedIn posts that are professional, insightful, and engaging — tailored to any topic and audience.\n** How It Works **\nWhenever you receive a topic, follow this process:\n1. Research\n Use the Tavily tool to perform a real-time search.\n Gather the most recent, credible, and relevant insights.\n Focus on facts, stats, case studies, and trends that add value.\n2. Write the Post\n Start with a strong hook to grab attention.\n Use a professional, confident tone.\n Make it clear and easy to read — short paragraphs, strong flow.\n Prioritize educational and actionable insights.\n Use emojis only when they truly add value (keep it minimal).\n Add proper attribution (e.g., “according to [source]ˮ).\n End with a call to action: invite thoughts, feedback, or shares.\n Include relevant, topic-specific hashtags to increase reach.\n** Output Rules **\nOutput only the final LinkedIn post description.\n-Donʼt explain the post or mention the steps taken.\n-Donʼt include quotation marks or formatting outside of whatʼs natural in the post.\n** Sample Use Case **\nTopic: The ROI of warehouse automation\n You research the latest stats, success stories, and market trends.\n Then, you craft a polished LinkedIn post with a hook, key data, expert insight, and a strong CTA"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        256,
+        48
+      ],
+      "id": "d5863065-752f-4314-8f8e-f9315f649ab7",
+      "name": "Linkedin post Description AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        224
+      ],
+      "id": "17e5b403-d154-42fd-b50f-a64934ef588f",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=LinkedIn Post: \n {{ $json.output }}",
+        "options": {
+          "systemMessage": "** Purpose **\n You are an AI agent designed to convert LinkedIn posts into visual prompt descriptions.\nThese prompts guide the creation of compelling marketing graphics that visually \nenhance the written message and align with professional branding standards.\n** Goals **\n Analyze the content of the LinkedIn post\n Identify the core message, insight, or idea\n Craft a visual prompt that represents the message in a striking and brand-consistent way\n Ensure the prompt is ideal for generating a professional marketing-style graphic, not a literal or hyperrealistic image\n** Visual Criteria **\nYour graphic prompt must:\n Visually support or represent the key idea from the post\n Be suitable for a modern LinkedIn post (clean, professional, polished)\n Reflect a current design aesthetic (flat, minimalist, creative, sharp)\n** Output Requirements **\n Output only the final image prompt — no explanation, rephrasing of the post, or surrounding text\n Never include placeholders like \"Header goes here\"\n Include numeric stats or figures if present in the original post\n Do not include quotation marks around the prompt\n Output should be ready to use in a text-to-image tool\n** Design Style & Elements **\nThink like a professional brand designer or marketing creative. Your visual prompts may include:\n Flat illustrations\n Bold or minimal typography elements (described in the prompt)\n Infographic components (charts, graphs, percentages)\n Modern abstract shapes or gradients\n Metaphors (e.g., lightbulb for ideas, mountain for growth)\n Layout suggestions (e.g., “split-screen layout,ˮ “centered title with subtle overlayˮ)\nOptional: soft shadows, motion-like lines, UI-style elements\n** Prompt Format Example **\nModern flat-design illustration of a glowing lightbulb emerging from a maze, symbolizing innovation through complexity. \nClean background with soft gradient, top-right space for headline text, subtle data overlay on the left side."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        592,
+        48
+      ],
+      "id": "7604a3f7-ad5f-4f60-9d04-9ed974569133",
+      "name": "Create Image Prompt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Description:  {{ $('Linkedin post Description AI Agent').item.json.output }}",
+        "options": {
+          "systemMessage": "** Overview **\nYour job is to create a clear & highly engaging title for the linkdein post based on it's description."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        896,
+        48
+      ],
+      "id": "a5b27006-03bc-4f51-b737-d61869af3bf9",
+      "name": "Generate Title AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        240
+      ],
+      "id": "2394c366-1cde-45f7-8c4d-dd138d505bbd",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Generate Image\n",
+        "height": 240,
+        "width": 448,
+        "color": "#B73434"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1360,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "b3bf21fb-c431-4d41-a69a-93842ff171ae",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-image-1-mini"
+        },
+        "prompt": "=Description : {{ $('Create Image Prompt').item.json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        1536,
+        -208
+      ],
+      "id": "01234702-b96a-4f42-97d3-68d6763f9644",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Publish",
+        "height": 224,
+        "width": 448,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1360,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "0c466d28-7a40-43d5-aa58-444636bda6c7",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        144
+      ],
+      "id": "be5b691e-dcd9-4daa-bad5-07d9f4551390",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "LlLKZcx8O1L9nNIl",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Generate Title AI Agent').item.json.output }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1vmB1dnKjbrwNh1A7eLaSE9YxUooH6xL6",
+          "mode": "list",
+          "cachedResultName": "Linkedin Post",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1vmB1dnKjbrwNh1A7eLaSE9YxUooH6xL6"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1472,
+        144
+      ],
+      "id": "936b4750-508e-4e0f-8e05-3214c51658f9",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "gLBzVyGgyPLjjWb9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Confirmation & send",
+        "height": 240,
+        "width": 448,
+        "color": "#41163D"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1360,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "35cbcba7-6b70-4b24-b321-805e0c6ad0b9",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Your Linkedin Post is Published",
+        "emailType": "text",
+        "message": "=Hello !!\nHere are detailes for your Linkedin Post \nTitle : {{ $('Generate Title AI Agent').item.json.output }}\nDescription : {{ $('Linkedin post Description AI Agent').item.json.output }}\nImage URL : {{ $json.webViewLink }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        432
+      ],
+      "id": "c24fbfe0-e78c-4c55-9f94-88afe03d42d2",
+      "name": "Send a message",
+      "webhookId": "d7e504d3-59fe-4b4e-8b40-653b1f39f98a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eZfMVN6p2skpvfEE",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Email": "Abdssamad.nakid@gmail.com",
+          "Post Topic": "n8n Tool",
+          "Target Audience": "IT Audience",
+          "submittedAt": "2026-09-06T14:36:01.589+01:00",
+          "formMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Linkedin post Description AI Agent": [
+      {
+        "json": {
+          "output": "With the rise of automation in workflows, n8n is revolutionizing how we orchestrate tasks across various platforms. 🌐 \n\nThis open-source tool empowers IT professionals to automate their processes without being chained to traditional coding practices. With n8n, you can easily integrate hundreds of applications through a simple, intuitive interface. \n\nRecent reports showcase its capabilities: organizations have reduced their manual process times by up to 70%, allowing teams to refocus on strategic initiatives rather than mundane tasks. 🌟 \n\nWhether you're managing data transfers, sending notifications, or aggregating reports, n8n provides the flexibility to design workflows tailored precisely to your needs. \n\nAs automation becomes more vital in our tech landscape, tools like n8n position us to enhance productivity and innovate further. \n\nWhat are your experiences with automation tools? Let's share insights! \n\n#Automation #n8n #OpenSource #IT #WorkflowManagement #Productivity"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Create Image Prompt": [
+      {
+        "json": {
+          "output": "Modern flat-design illustration of a dynamic digital workflow, showcasing the seamless integration of multiple applications through automation. Highlight a prominent 70% reduction in manual process times within a clean, tech-inspired background. Include abstract shapes representing data transfer, notifications, and report aggregation. Centered bold typography for a headline with a subtle overlay of connected lines symbolizing efficiency and innovation. Soft shadows to enhance depth and a vibrant color palette to reflect energy and progress."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Generate Title AI Agent": [
+      {
+        "json": {
+          "output": "**Unlocking Efficiency: How n8n is Transforming Workflow Automation for IT Professionals! 🚀**"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Linkedin post Description AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Linkedin post Description AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "Linkedin post Description AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Linkedin post Description AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create Image Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate Title AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Title AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Title AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a64bea50-0f70-46fd-951e-fd1ac7a271fb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "49e2ee60c5edec48c97f145c51ac4b42a1e43af94f153a301aeb68a3420c287a"
+  },
+  "nodeGroups": [],
+  "id": "C5kowZEDiBECKITl",
+  "tags": []
+}
