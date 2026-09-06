@@ -11,6 +11,7 @@ Writing consistent, high-performing content on LinkedIn takes significant time a
 5. Backs up the generated image into Google Drive.
 6. Publishes the post with the generated image directly to LinkedIn.
 7. Dispatches an execution confirmation email via Gmail.
+8. 
 [ 📝 Form Submission ]
 │
 ▼
